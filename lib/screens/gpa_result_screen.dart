@@ -45,7 +45,8 @@ class GPAResultScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GPA Result'),
+        title: Text('GPA Result',
+        style: TextStyle(color: Colors.white),),
         backgroundColor: gpaColor.withOpacity(0.9),
         elevation: 0,
       ),
@@ -171,7 +172,7 @@ class GPAResultScreen extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     'Calculate Another GPA',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),

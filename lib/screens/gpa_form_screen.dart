@@ -12,7 +12,7 @@ class GPAFormScreen extends StatefulWidget {
 class _GPAFormScreenState extends State<GPAFormScreen> {
   final List<Course> courses = [];
   final _formKey = GlobalKey<FormState>();
-  
+
   final List<TextEditingController> nameControllers = List.generate(
     6,
     (index) => TextEditingController(),
@@ -23,13 +23,33 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
   );
   final List<String> selectedGrades = List.generate(6, (index) => 'A');
 
+  Color _getGradeColor(String grade) {
+    switch (grade) {
+      case 'A':
+        return const Color(0xFF2E7D32);
+      case 'B+':
+        return const Color(0xFF1565C0);
+      case 'B':
+        return const Color(0xFF1976D2);
+      case 'C+':
+        return const Color(0xFF6A1B9A);
+      case 'C':
+        return const Color(0xFF7B1FA2);
+      case 'D+':
+        return const Color(0xFFEF6C00);
+      default:
+        return const Color(0xFFD32F2F);
+    }
+  }
+
   void _calculateGPA() {
     if (_formKey.currentState!.validate()) {
       courses.clear();
       int filledCourses = 0;
-      
+
       for (int i = 0; i < 6; i++) {
-        if (nameControllers[i].text.isNotEmpty && creditControllers[i].text.isNotEmpty) {
+        if (nameControllers[i].text.isNotEmpty &&
+            creditControllers[i].text.isNotEmpty) {
           courses.add(Course(
             name: nameControllers[i].text.trim(),
             credits: int.parse(creditControllers[i].text),
@@ -46,7 +66,7 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
         );
         return;
       }
-      
+
       Navigator.pushNamed(
         context,
         '/result',
@@ -59,40 +79,105 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GPA Calculator'),
+        title: const Text('GPA Calculator',
+        style: TextStyle(color: Colors.white)),
+        elevation: 0,
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            ...List.generate(6, (index) => _buildCourseInput(index)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _calculateGPA,
-              child: const Text('Calculate GPA'),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).primaryColor.withOpacity(0.1),
+              Colors.white,
+            ],
+          ),
+        ),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              ...List.generate(6, (index) => _buildCourseInput(index)),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 4,
+                  ),
+                  onPressed: _calculateGPA,
+                  child: const Text(
+                    'Calculate GPA',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCourseInput(int index) {
+    final gradeColor = _getGradeColor(selectedGrades[index]);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: Theme.of(context).primaryColor.withOpacity(0.2),
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Course ${index + 1}', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Course ${index + 1}',
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: nameControllers[index],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Course Name',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.grey[50],
               ),
               validator: (value) {
                 if (index == 0 && (value == null || value.isEmpty)) {
@@ -101,12 +186,21 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextFormField(
               controller: creditControllers[index],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Credits',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).primaryColor, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.grey[50],
               ),
               keyboardType: TextInputType.number,
               validator: (value) {
@@ -128,17 +222,35 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
                 return null;
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: selectedGrades[index],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Grade',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: gradeColor, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: gradeColor.withOpacity(0.5)),
+                ),
+                filled: true,
+                fillColor: gradeColor.withOpacity(0.05),
               ),
               items: GradeScale.grades.map((String grade) {
                 return DropdownMenuItem<String>(
                   value: grade,
-                  child: Text(grade),
+                  child: Text(
+                    grade,
+                    style: TextStyle(
+                      color: _getGradeColor(grade),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 );
               }).toList(),
               onChanged: (String? newValue) {
