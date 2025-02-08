@@ -1,10 +1,10 @@
-// lib/screens/gpa_result_screen.dart
 import 'package:flutter/material.dart';
 import '../models/course.dart';
 
 class GPAResultScreen extends StatelessWidget {
   const GPAResultScreen({super.key});
 
+  // Calculates the final GPA
   double calculateGPA(List<Course> courses) {
     if (courses.isEmpty) return 0.0;
 
@@ -19,6 +19,7 @@ class GPAResultScreen extends StatelessWidget {
     return totalCredits > 0 ? totalGradePoints / totalCredits : 0.0;
   }
 
+  // class/honors based on the GPA value
   String getGPAClass(double gpa) {
     if (gpa >= 3.7) return 'First Class';
     if (gpa >= 3.0) return 'Second Class Upper';
@@ -27,6 +28,7 @@ class GPAResultScreen extends StatelessWidget {
     return 'Fail';
   }
 
+  // Color based gpa range for visual feedback
   Color _getGPAColor(double gpa) {
     if (gpa >= 3.7) return const Color(0xFF2E7D32); // Dark Green
     if (gpa >= 3.0) return const Color(0xFF1565C0); // Dark Blue
@@ -37,20 +39,25 @@ class GPAResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the course list
     final List<Course> courses =
         ModalRoute.of(context)!.settings.arguments as List<Course>;
     final gpa = calculateGPA(courses);
     final gpaClass = getGPAClass(gpa);
     final gpaColor = _getGPAColor(gpa);
 
+    // Build the result screen with a color-coded theme based on GPA
     return Scaffold(
       appBar: AppBar(
-        title: Text('GPA Result',
-        style: TextStyle(color: Colors.white),),
+        title: Text(
+          'GPA Result',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: gpaColor.withOpacity(0.9),
         elevation: 0,
       ),
       body: Container(
+        // gradient background effect
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -66,6 +73,7 @@ class GPAResultScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Display the main GPA card wit the result
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -111,6 +119,7 @@ class GPAResultScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              // Breakdown of individual courses
               Text(
                 'Course Breakdown',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -119,6 +128,7 @@ class GPAResultScreen extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 12),
+              // List of cards showing details for each course
               ...courses.map((course) => Card(
                     margin: const EdgeInsets.only(bottom: 12.0),
                     elevation: 2,
@@ -159,6 +169,7 @@ class GPAResultScreen extends StatelessWidget {
                     ),
                   )),
               const SizedBox(height: 24),
+              // return to calculator for another calculation
               Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(

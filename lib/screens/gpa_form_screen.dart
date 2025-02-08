@@ -1,7 +1,7 @@
-// lib/screens/gpa_form_screen.dart
 import 'package:flutter/material.dart';
 import '../models/course.dart';
 
+// Main form widget handles GPA calculation
 class GPAFormScreen extends StatefulWidget {
   const GPAFormScreen({super.key});
 
@@ -10,9 +10,11 @@ class GPAFormScreen extends StatefulWidget {
 }
 
 class _GPAFormScreenState extends State<GPAFormScreen> {
+  // Store the list of courses for GPA calculation
   final List<Course> courses = [];
   final _formKey = GlobalKey<FormState>();
 
+  // Controllers for course names and credits
   final List<TextEditingController> nameControllers = List.generate(
     6,
     (index) => TextEditingController(),
@@ -21,8 +23,10 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
     6,
     (index) => TextEditingController(),
   );
+  // Initialize all grades to 'A' by default
   final List<String> selectedGrades = List.generate(6, (index) => 'A');
 
+  // Returns a color based on the grade to provide visual feedback
   Color _getGradeColor(String grade) {
     switch (grade) {
       case 'A':
@@ -42,11 +46,13 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
     }
   }
 
+  // Validates form input
   void _calculateGPA() {
     if (_formKey.currentState!.validate()) {
       courses.clear();
       int filledCourses = 0;
 
+      // Collect filled course information
       for (int i = 0; i < 6; i++) {
         if (nameControllers[i].text.isNotEmpty &&
             creditControllers[i].text.isNotEmpty) {
@@ -60,6 +66,7 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
         }
       }
 
+      // Ensure at least one course entered
       if (filledCourses == 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please enter at least one course')),
@@ -67,6 +74,7 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
         return;
       }
 
+      // Navigate to results screen with data
       Navigator.pushNamed(
         context,
         '/result',
@@ -77,10 +85,11 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Main screen with gradient background
     return Scaffold(
       appBar: AppBar(
-        title: const Text('GPA Calculator',
-        style: TextStyle(color: Colors.white)),
+        title:
+            const Text('GPA Calculator', style: TextStyle(color: Colors.white)),
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
       ),
@@ -116,7 +125,10 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
                   onPressed: _calculateGPA,
                   child: const Text(
                     'Calculate GPA',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
               ),
@@ -127,9 +139,11 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
     );
   }
 
+  // creates individual course input card with name, credits, and grade fields
   Widget _buildCourseInput(int index) {
     final gradeColor = _getGradeColor(selectedGrades[index]);
 
+    // Create a card for each course input
     return Card(
       margin: const EdgeInsets.only(bottom: 16.0),
       elevation: 3,
@@ -267,6 +281,7 @@ class _GPAFormScreenState extends State<GPAFormScreen> {
     );
   }
 
+  // Clean up controllers
   @override
   void dispose() {
     for (var controller in [...nameControllers, ...creditControllers]) {
